@@ -7,8 +7,8 @@ require 'open-uri'
 Handler = Proc.new do |req, res|
  
     log = Logger.new(STDOUT)
-    logger.info("writing log message")
-    logger.info('nokogiri') { "writing second log message" }
+    log.info("writing log message")
+    log.info('nokogiri') { "writing second log message" }
 
     # variables
     project = 'my_new_website'
@@ -19,7 +19,7 @@ Handler = Proc.new do |req, res|
     page.title = title
 
     # api = Github.new
-    # api.oauth_token = 'bed40b25d7058a647c15a018424847f313c6c93b'
+    # api.oauth_token = "TODO"
     # begin
     #     # create a repo
     #     api.repos.create name: project,
@@ -33,7 +33,7 @@ Handler = Proc.new do |req, res|
     #         path: 'index.html',
     #         message: 'create file from template'
     # rescue Github::Error::GithubError => e
-    #     logger.error(e.message)
+    #     log.error(e.message)
     # end
 
 
