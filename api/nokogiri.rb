@@ -6,9 +6,9 @@ require 'open-uri'
 
 Handler = Proc.new do |req, res|
  
-    log = Logger.new(STDOUT)
-    log.info("writing log message")
-    log.info('nokogiri') { "writing second log message" }
+    log = Logger.new
+    log.info('\n' + 'writing log message')
+    log.info('nokogiri') { '\n' + 'writing second log message' }
 
     # variables
     project = 'my_new_website'
@@ -33,7 +33,7 @@ Handler = Proc.new do |req, res|
     #         path: 'index.html',
     #         message: 'create file from template'
     # rescue Github::Error::GithubError => e
-    #     log.error(e.message)
+    #     log.error('\n' + e.message)
     # end
 
 
