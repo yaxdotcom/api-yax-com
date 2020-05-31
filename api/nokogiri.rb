@@ -7,8 +7,8 @@ require 'open-uri'
 Handler = Proc.new do |req, res|
  
     log = Logger.new(STDOUT)
-    log.info("\n" + 'writing log message')
-    log.error('nokogiri') { "\n" + 'writing second log message' }
+    log.info("\n" + 'writing log message' + "\n")
+    log.error('nokogiri') { "\n" + 'writing second log message'  + "\n" }
 
     # variables
     project = 'my_new_website'
