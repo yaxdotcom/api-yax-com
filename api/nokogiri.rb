@@ -6,7 +6,7 @@ require 'open-uri'
 
 Handler = Proc.new do |req, res|
  
-    log = Logger.new
+    log = Logger.new(STDOUT)
     log.info('\n' + 'writing log message')
     log.info('nokogiri') { '\n' + 'writing second log message' }
 
