@@ -12,7 +12,7 @@ Handler = Proc.new do |req, res|
     page = Nokogiri::HTML(URI.open(uri))
     page.title = title
     # output
-    res.status = 200
-    res['Content-Type'] = 'text/plain'
-    res.body = page.to_html
+    res.status = 301
+    res['Location'] = 'https://github.com/DanielKehoe?tab=repositories'
+    res.body = ''
 end
