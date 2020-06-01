@@ -21,38 +21,33 @@ Handler = Proc.new do |req, res|
     log.info('deploy.rb') { "\n title: " + title + "\n" }
     log.info('deploy.rb') { "\n description: " + description + "\n" }
 
-    log.info('deploy.rb') { "\n req.path: " + req.path + "\n" }
-    log.info('deploy.rb') { "\n req.body: " + req.body + "\n" }
-    req.each { |attribute| puts " \n#{attribute}:  #{req[attribute]} \n" }
-    req.each { |param| puts " \n#{param}:  #{req[param]} \n" }
+    # parse and replace
+    uri = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/index.html")
+    page = Nokogiri::HTML(URI.open(uri))
+    page.title = title
 
-    # # parse and replace
-    # uri = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/index.html")
-    # page = Nokogiri::HTML(URI.open(uri))
-    # page.title = title
+    api = Github.new
+    api.oauth_token = ENV['OAUTH_TOKEN']
+    begin
+        # create a repo
+        api.repos.create name: repository,
+            description: description,
+            private: false,
+            has_issues: true
+        # save a template file
+        api.repos.contents.create account, repository, 'index.html',
+            content: page.to_html,
+            path: 'index.html',
+            message: 'create file from template'
+    rescue Github::Error::GithubError => e
+        log.error('nokogiri.rb') { "\n" + e.message = "\n" }
+    end
 
-    # api = Github.new
-    # api.oauth_token = ENV['OAUTH_TOKEN']
-    # begin
-    #     # create a repo
-    #     api.repos.create name: repository,
-    #         description: description,
-    #         private: false,
-    #         has_issues: true
-    #     # save a template file
-    #     api.repos.contents.create account, repository, 'index.html',
-    #         content: page.to_html,
-    #         path: 'index.html',
-    #         message: 'create file from template'
-    # rescue Github::Error::GithubError => e
-    #     log.error('nokogiri.rb') { "\n" + e.message = "\n" }
-    # end
+    # output
+    res.status = 301
+    res['Location'] = "https://github.com/#{account}?tab=repositories"
+    res.body = ''
 
-    # # output
-    # res.status = 301
-    # res['Location'] = "https://github.com/#{account}?tab=repositories"
-    # res.body = ''
-
-    res.status = 200
-    res.body = 'processed'
+    # res.status = 200
+    # res.body = 'processed'
 end
