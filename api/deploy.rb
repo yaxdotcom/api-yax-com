@@ -15,15 +15,15 @@ Handler = Proc.new do |req, res|
     title = req.query['title']
     description = req.query['description']
 
-    log.info('deploy.rb') { "\n template: " + template= "\n" }
-    log.info('deploy.rb') { "\n account: " + account = "\n" }
-    log.info('deploy.rb') { "\n repository: " + repository = "\n" }
-    log.info('deploy.rb') { "\n title: " + title = "\n" }
-    log.info('deploy.rb') { "\n description: " + description = "\n" }
+    log.info('deploy.rb') { "\n template: " + template + "\n" }
+    log.info('deploy.rb') { "\n account: " + account + "\n" }
+    log.info('deploy.rb') { "\n repository: " + repository + "\n" }
+    log.info('deploy.rb') { "\n title: " + title + "\n" }
+    log.info('deploy.rb') { "\n description: " + description + "\n" }
 
-    log.info('deploy.rb') { "\n req.path: " + req.path = "\n" }
-    log.info('deploy.rb') { "\n req.body: " + req.body = "\n" }
-    req.each { |head| puts " \n#{head}:  #{req[head]} \n" }
+    log.info('deploy.rb') { "\n req.path: " + req.path + "\n" }
+    log.info('deploy.rb') { "\n req.body: " + req.body + "\n" }
+    req.each { |attribute| puts " \n#{attribute}:  #{req[attribute]} \n" }
     req.each { |param| puts " \n#{param}:  #{req[param]} \n" }
 
     # # parse and replace
