@@ -39,26 +39,26 @@ Handler = Proc.new do |req, res|
     api.oauth_token = access_token.token
     log.info('deploy.rb') { "\n access_token (after setting): " + api.oauth_token + "\n" }
 
-    begin
-        # create a repo
-        api.repos.create name: repository,
-            description: description,
-            private: false,
-            has_issues: true
-        # save a template file
-        api.repos.contents.create account, repository, 'index.html',
-            content: page.to_html,
-            path: 'index.html',
-            message: 'create file from template'
-    rescue Github::Error::GithubError => e
-        log.error('nokogiri.rb') { "\n" + e.message = "\n" }
-    end
+    # begin
+    #     # create a repo
+    #     api.repos.create name: repository,
+    #         description: description,
+    #         private: false,
+    #         has_issues: true
+    #     # save a template file
+    #     api.repos.contents.create account, repository, 'index.html',
+    #         content: page.to_html,
+    #         path: 'index.html',
+    #         message: 'create file from template'
+    # rescue Github::Error::GithubError => e
+    #     log.error('nokogiri.rb') { "\n" + e.message = "\n" }
+    # end
 
-    # output
-    res.status = 301
-    res['Location'] = "https://github.com/#{account}?tab=repositories"
-    res.body = ''
+    # # output
+    # res.status = 301
+    # res['Location'] = "https://github.com/#{account}?tab=repositories"
+    # res.body = ''
 
-    # res.status = 200
-    # res.body = 'processed'
+    res.status = 200
+    res.body = 'processed'
 end
