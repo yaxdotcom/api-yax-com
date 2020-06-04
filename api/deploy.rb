@@ -10,7 +10,7 @@ Handler = Proc.new do |req, res|
     log = Logger.new(STDOUT)
 
     session_code = req.query['code']
-    params = JSON.parse(Base64.decode64(req.query['state'])).with_indifferent_access
+    params = JSON.parse(Base64.decode64(req.query['state']))
 
     # parameters
     template = params['templateId']
