@@ -32,6 +32,10 @@ Handler = Proc.new do |req, res|
     page = Nokogiri::HTML(URI.open(uri))
     page.title = title
     
+    log.info('deploy.rb') { "\n GITHUB_CLIENT_ID:GITHUB_CLIENT_SECRET: " + "#{ENV['GITHUB_CLIENT_ID']}:#{ENV['GITHUB_CLIENT_SECRET']}" + "\n" }
+ 
+
+
     api = Github.new(basic_auth: "#{ENV['GITHUB_CLIENT_ID']}:#{ENV['GITHUB_CLIENT_SECRET']}")
     access_token = api.get_token(authorization_code)
     log.info('deploy.rb') { "\n access_token (after getting): " + access_token + "\n" }
