@@ -49,7 +49,7 @@ Handler = Proc.new do |req, res|
             path: 'index.html',
             message: 'create file from template'
     rescue Github::Error::GithubError => e
-        log.error('nokogiri.rb') { "\n" + e.message = "\n" }
+        log.error('deploy.rb') { "\n" + e.message + "\n" }
     end
 
     # output
