@@ -53,26 +53,25 @@ Handler = Proc.new do |req, res|
         [![Deploy to Vercel](/button)](/import/project?template=https://github.com/#{user.login}/#{repository})
 
         DOC
-        
-        # output
-        res.status = 200
-        res.body =  doc_preamble + "\n\n" + doc_readme
-
 
         # # create a repo
         # api.repos.create name: repository,
         #     description: description,
         #     private: false,
         #     has_issues: true
-        # # save a template file
-        # api.repos.contents.create user.login, repository, 'index.html',
-        #     content: page.to_html,
-        #     path: 'index.html',
-        #     message: 'Yax: create file from template'
-        # # output
-        # res.status = 301
-        # res['Location'] = "https://github.com/#{user.login}?tab=repositories"
-        # res.body = ''
+        # save a template file
+        api.repos.contents.create user.login, repository, 'README.md',
+            content: doc_preamble + "\n" + doc_readme,
+            path: 'README.md',
+            message: 'Yax: create README from template'
+        api.repos.contents.create user.login, repository, 'index.html',
+            content: page.to_html,
+            path: 'index.html',
+            message: 'Yax: create file from template'
+        # output
+        res.status = 301
+        res['Location'] = "https://github.com/#{user.login}?tab=repositories"
+        res.body = ''
     rescue Github::Error::GithubError => e
         log.error('deploy.rb') { "\n" + e.message + "\n" }
         res.status = 500
