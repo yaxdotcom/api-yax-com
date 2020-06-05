@@ -28,12 +28,11 @@ Handler = Proc.new do |req, res|
     page = Nokogiri::HTML(URI.open(uri))
     page.title = title
 
-    # get and set access_token using user authorization_code and app credentials
-    api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
-    access_token = api.get_token(authorization_code)
-    api.oauth_token = access_token.token
-
     begin
+        # get and set access_token using user authorization_code and app credentials
+        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
+        access_token = api.get_token(authorization_code)
+        api.oauth_token = access_token.token
         # get username
         user = api.users.get
         log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
@@ -48,15 +47,14 @@ Handler = Proc.new do |req, res|
             content: page.to_html,
             path: 'index.html',
             message: 'create file from template'
+        # output
+        res.status = 301
+        res['Location'] = "https://github.com/#{user.login}?tab=repositories"
+        res.body = ''
     rescue Github::Error::GithubError => e
         log.error('deploy.rb') { "\n" + e.message + "\n" }
+        res.status = 500
+        res.body = 'processed'
     end
 
-    # output
-    res.status = 301
-    res['Location'] = "https://github.com/#{user.login}?tab=repositories"
-    res.body = ''
-
-    # res.status = 200
-    # res.body = 'processed'
 end
