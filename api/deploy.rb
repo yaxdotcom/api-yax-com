@@ -38,12 +38,12 @@ Handler = Proc.new do |req, res|
         user = api.users.get
         log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
         log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
-        create a repo
+        # create a repo
         api.repos.create name: repository,
             description: description,
             private: false,
             has_issues: true
-        save a template file
+        # save a template file
         api.repos.contents.create user.login, repository, 'index.html',
             content: page.to_html,
             path: 'index.html',
