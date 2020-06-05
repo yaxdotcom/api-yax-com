@@ -54,16 +54,17 @@ Handler = Proc.new do |req, res|
 
         DOC
 
-        # # create a repo
-        # api.repos.create name: repository,
-        #     description: description,
-        #     private: false,
-        #     has_issues: true
-        # save a template file
+        # create a repo
+        api.repos.create name: repository,
+            description: description,
+            private: false,
+            has_issues: true
+        # save a README file
         api.repos.contents.create user.login, repository, 'README.md',
             content: doc_preamble + "\n" + doc_readme,
             path: 'README.md',
             message: 'Yax: create README from template'
+        # save a template file
         api.repos.contents.create user.login, repository, 'index.html',
             content: page.to_html,
             path: 'index.html',
