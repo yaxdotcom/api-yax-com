@@ -54,7 +54,7 @@ Handler = Proc.new do |req, res|
     rescue Github::Error::GithubError => e
         log.error('deploy.rb') { "\n" + e.message + "\n" }
         res.status = 500
-        res.body = 'processed'
+        res.body = e.message
     end
 
 end
