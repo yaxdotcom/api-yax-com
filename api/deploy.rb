@@ -9,23 +9,19 @@ Handler = Proc.new do |req, res|
  
     log = Logger.new(STDOUT)
 
+    # parameters
     authorization_code = req.query['code']
     params = JSON.parse(Base64.decode64(req.query['state']))
-
-    # parameters
-    account = 'DanielKehoe' # to be replaced
     template = params['templateId']
     repository = params['repository']
     title = params['title']
     description = params['description']
 
-    log.info('deploy.rb') { "\n account: " + account + "\n" }
+    # diagnostics
     log.info('deploy.rb') { "\n template: " + template + "\n" }
     log.info('deploy.rb') { "\n repository: " + repository + "\n" }
     log.info('deploy.rb') { "\n title: " + title + "\n" }
     log.info('deploy.rb') { "\n description: " + description + "\n" }
-
-    
 
     # parse and replace
     uri = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/index.html")
@@ -37,25 +33,28 @@ Handler = Proc.new do |req, res|
     access_token = api.get_token(authorization_code)
     api.oauth_token = access_token.token
 
-
     begin
-        # create a repo
+        # get username
+        user = api.users.get
+        log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
+        log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
+        create a repo
         api.repos.create name: repository,
             description: description,
             private: false,
             has_issues: true
-        # save a template file
-        # api.repos.contents.create account, repository, 'index.html',
-        #     content: page.to_html,
-        #     path: 'index.html',
-        #     message: 'create file from template'
+        save a template file
+        api.repos.contents.create user.login, repository, 'index.html',
+            content: page.to_html,
+            path: 'index.html',
+            message: 'create file from template'
     rescue Github::Error::GithubError => e
         log.error('nokogiri.rb') { "\n" + e.message = "\n" }
     end
 
     # output
     res.status = 301
-    res['Location'] = "https://github.com/#{account}?tab=repositories"
+    res['Location'] = "https://github.com/#{user.login}?tab=repositories"
     res.body = ''
 
     # res.status = 200
