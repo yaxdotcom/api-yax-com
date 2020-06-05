@@ -26,10 +26,11 @@ Handler = Proc.new do |req, res|
     # download README file and prepend markdown
     uri_readme = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/README.md")
     doc_readme = (URI.open(uri_readme)).read
+    doc_preamble = ERB.new(DATA.read)
 
     # output
     res.status = 200
-    res.body = doc_readme
+    res.body =  doc_preamble + "\n\n" + doc_readme
 
     # # download, parse and replace HTML index file
     # uri_index = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/index.html")
@@ -70,3 +71,8 @@ Handler = Proc.new do |req, res|
     # end
 
 end
+
+__END__
+# <%= #{title} %>
+
+This is the repository for the <%= #{repository} %> website.
