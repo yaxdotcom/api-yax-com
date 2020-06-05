@@ -46,7 +46,7 @@ Handler = Proc.new do |req, res|
         api.repos.contents.create user.login, repository, 'index.html',
             content: page.to_html,
             path: 'index.html',
-            message: 'create file from template'
+            message: 'Yax: create file from template'
         # output
         res.status = 301
         res['Location'] = "https://github.com/#{user.login}?tab=repositories"
@@ -54,7 +54,11 @@ Handler = Proc.new do |req, res|
     rescue Github::Error::GithubError => e
         log.error('deploy.rb') { "\n" + e.message + "\n" }
         res.status = 500
-        res.body = e.message
+        if(e.message.include?('name already exists'))
+            res.body = "Error: A repository with the name #{repository} already exists. Try another name."
+        else
+            res.body = e.message
+        end
     end
 
 end
