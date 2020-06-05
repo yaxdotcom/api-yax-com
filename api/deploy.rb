@@ -50,7 +50,7 @@ Handler = Proc.new do |req, res|
         permanent (and free) and you get version control to track changes to your files. Using GitHub, 
         you can easily deploy your website to Vercel or Netlify for free hosting.
 
-        [![Deploy to Vercel](/button)](/import/project?template=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com//import/project?template=https://github.com/#{user.login}/#{repository})
 
         DOC
 
