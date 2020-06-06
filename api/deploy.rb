@@ -25,11 +25,8 @@ Handler = Proc.new do |req, res|
     log.info('deploy.rb') { "\n description: " + description + "\n" }
 
     # download and parse a configuration file
-    # uri_yaml = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml")
-    # config = YAML.parse((URI.open(uri_yaml)).read)
-    # log.info('deploy.rb') { "\n config: " + config.inspect + "\n" }
-
-    config = URI.parse("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml").open.read
+    uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
+    config = YAML.parse(URI.parse(uri_yaml).open.read)
     log.info('deploy.rb') { "\n config.class.name: " + config.class.name + "\n" }
     log.info('deploy.rb') { "\n config.inspect: " + config.inspect + "\n" }
     log.info('deploy.rb') { "\n config: " + config.to_s + "\n" }
