@@ -46,12 +46,18 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{title}
 
-        This is the GitHub repository for the #{repository} website. We use GitHub because storage is 
-        permanent (and free) and you get version control to track changes to your files. Using GitHub, 
-        you can easily deploy your website to Vercel or Netlify for free hosting.
+        This is the GitHub repository for your #{repository} project. We save your files to GitHub because storage is 
+        permanent (and free) and you get version control to track changes to your files. Plus, using GitHub, 
+        you can easily deploy your website for free hosting.
 
-        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com//import/project?template=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
 
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
+
+        After you've deployed your website, visit your site to edit the pages. The template includes the [Mavo](https://mavo.io/) 
+        website editor so you can edit content right on the website.
+
+        Read more below about the website template you've chosen.
         DOC
 
         # create a repo
@@ -63,12 +69,12 @@ Handler = Proc.new do |req, res|
         api.repos.contents.create user.login, repository, 'README.md',
             content: doc_preamble + "\n" + doc_readme,
             path: 'README.md',
-            message: 'Yax: create README from template'
+            message: 'Yax: README from template'
         # save a template file
         api.repos.contents.create user.login, repository, 'index.html',
             content: page.to_html,
             path: 'index.html',
-            message: 'Yax: create file from template'
+            message: 'Yax: index.html file from template'
         # output
         res.status = 301
         res['Location'] = "https://github.com/#{user.login}?tab=repositories"
