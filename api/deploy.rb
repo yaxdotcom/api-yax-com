@@ -29,7 +29,7 @@ Handler = Proc.new do |req, res|
     config = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
     log.info('deploy.rb') { "\n config.class.name: " + config['files'].class.name + "\n" }
     log.info('deploy.rb') { "\n config.inspect: " + config['files'].inspect + "\n" }
-    log.info('deploy.rb') { "\n config['yax_version']: " + config['files'][0] + "\n" }
+    log.info('deploy.rb') { "\n config['files'][0]: " + config['files'][0] + "\n" }
 
     # output
     res.status = 200
