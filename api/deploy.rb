@@ -46,23 +46,26 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{title}
 
-        This is the GitHub repository for your #{repository} project. We save your files to GitHub because storage is 
-        permanent (and free) and you get version control to track changes to your files. Plus, using GitHub, 
-        you can easily deploy your website for free hosting.
+        This is the GitHub repository for your #{repository} project, generated from a 
+        [yax.com](https://yax.com) website template. We save your files to GitHub because 
+        storage is permanent (and free) and you get version control to track changes to 
+        your files. Plus, using GitHub, you can easily deploy your website for free hosting.
+        Click a button below to deploy your website.
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
 
         [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
 
-        After you've deployed your website, visit your site to edit the pages. The template includes the [Mavo](https://mavo.io/) 
-        website editor so you can edit content right on the website.
+        After you've deployed your website, visit your site to edit the pages. The template 
+        includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
+        on the website.
 
-        Read more below about the website template you've chosen.
+        You can read below about the #{template} website template you've chosen.
         DOC
 
         # create a repo
         api.repos.create name: repository,
-            description: description,
+            description: 'Built by yax.com: ' + description
             private: false,
             has_issues: true
         # save a README file
