@@ -26,7 +26,7 @@ Handler = Proc.new do |req, res|
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
-    config = YAML.parse(URI.parse(uri_yaml).open.read)
+    config = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
     log.info('deploy.rb') { "\n config.class.name: " + config.class.name + "\n" }
     log.info('deploy.rb') { "\n config.inspect: " + config.inspect + "\n" }
     log.info('deploy.rb') { "\n config.yax_version: " + config.yax_version + "\n" }
