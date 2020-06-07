@@ -51,25 +51,27 @@ Handler = Proc.new do |req, res|
     filelist = extract_filenames(manifest['files'], '', [])
 
     # use Heredocs for a README preamble
-    doc_preamble = <<~DOC
-    # #{title}
+    def doc_preamble(user, repository)
+        doc_preamble = <<~DOC
+        # #{title}
 
-    This is the GitHub repository for your #{repository} project, generated from a 
-    [yax.com](https://yax.com) website template. We save your files to GitHub because 
-    storage is permanent (and free) and you get version control to track changes to 
-    your files. Plus, using GitHub, you can easily deploy your website for free hosting.
-    Click a button below to deploy your website.
+        This is the GitHub repository for your #{repository} project, generated from a 
+        [yax.com](https://yax.com) website template. We save your files to GitHub because 
+        storage is permanent (and free) and you get version control to track changes to 
+        your files. Plus, using GitHub, you can easily deploy your website for free hosting.
+        Click a button below to deploy your website.
 
-    [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
 
-    [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
 
-    After you've deployed your website, visit your site to edit the pages. The template 
-    includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
-    on the website.
+        After you've deployed your website, visit your site to edit the pages. The template 
+        includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
+        on the website.
 
-    You can read below about the #{template} website template you've chosen.
-    DOC
+        You can read below about the #{template} website template you've chosen.
+        DOC
+    end
 
     begin
         # get and set access_token using user authorization_code and app credentials
@@ -93,7 +95,7 @@ Handler = Proc.new do |req, res|
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                doc_readme = doc_preamble + "\n" + (URI.open(uri_readme)).read
+                doc_readme = doc_preamble(user, repository) + "\n" + (URI.open(uri_readme)).read
                 api.repos.contents.create user.login, repository, filename,
                     content: doc_readme,
                     path: filename,
