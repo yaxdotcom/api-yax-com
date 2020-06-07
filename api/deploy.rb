@@ -26,14 +26,34 @@ Handler = Proc.new do |req, res|
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
-    config = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
-    log.info('deploy.rb') { "\n config.class.name: " + config['files'].class.name + "\n" }
-    log.info('deploy.rb') { "\n config.inspect: " + config['files'].inspect + "\n" }
-    log.info('deploy.rb') { "\n config['files'][0]: " + config['files'][0] + "\n" }
+    manifest = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
 
+    def extract_filenames(source, filepath, filelist)
+        case source.class.to_s
+        when 'String'
+            filelist << filepath + source
+            filepath = ''
+        when 'Array'
+            source.each do |item|
+                extract_filenames(item, filepath, filelist)
+            end
+        when 'Hash'
+            source.each do |key, value|
+                filepath << key + '/'
+                extract_filenames(value, filepath, filelist)
+            end
+        end
+        filelist
+    end
+    
+    filelist = extract_filenames(manifest['files'], '', [])
+    message = 'FILES' + "\n" + '=====' + "\n"
+    filelist.each do |item|
+        message << item + "\n"
+    end
     # output
     res.status = 200
-    res.body = "yax_version: " + config['yax_version']
+    res.body = message
 
     # # download README file
     # uri_readme = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/README.md")
