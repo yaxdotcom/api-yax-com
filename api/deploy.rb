@@ -51,11 +51,11 @@ Handler = Proc.new do |req, res|
     filelist = extract_filenames(manifest['files'], '', [])
 
     # use Heredocs for a README preamble
-    def doc_preamble(user, repository, title)
+    def doc_preamble(user, params)
         doc_preamble = <<~DOC
-        # #{title}
+        # #{params['title']}
 
-        This is the GitHub repository for your #{repository} project, generated from a 
+        This is the GitHub repository for your #{params['repository']} project, generated from a 
         [yax.com](https://yax.com) website template. We save your files to GitHub because 
         storage is permanent (and free) and you get version control to track changes to 
         your files. Plus, using GitHub, you can easily deploy your website for free hosting.
@@ -63,13 +63,13 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
 
-        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
 
         After you've deployed your website, visit your site to edit the pages. The template 
         includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
         on the website.
 
-        You can read below about the #{template} website template you've chosen.
+        You can read below about the #{params['templateId']} website template you've chosen.
         DOC
     end
 
@@ -95,7 +95,7 @@ Handler = Proc.new do |req, res|
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                doc_readme = doc_preamble(user, repository, title) + "\n" + (URI.open(uri_readme)).read
+                doc_readme = doc_preamble(user, params) + "\n" + (URI.open(uri_readme)).read
                 api.repos.contents.create user.login, repository, filename,
                     content: doc_readme,
                     path: filename,
