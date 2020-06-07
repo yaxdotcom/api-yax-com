@@ -106,7 +106,7 @@ Handler = Proc.new do |req, res|
                 page = Nokogiri::HTML(URI.open(uri_page))
                 page.title = title
                 page.at('meta[name="description"]')['content'] = description
-                page.at_css('h1#headline').content = = title
+                page.at_css('h1#headline').content = title
                 page.at_css('p#description').content = description
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
