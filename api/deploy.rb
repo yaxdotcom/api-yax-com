@@ -82,7 +82,7 @@ Handler = Proc.new do |req, res|
         log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
         # create a repo
         api.repos.create name: repository,
-            description: 'Built by yax.com: ' + description
+            description: 'Built by yax.com: ' + description,
             private: false,
             has_issues: true
         # retrieve and save files
