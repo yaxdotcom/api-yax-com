@@ -51,7 +51,7 @@ Handler = Proc.new do |req, res|
     filelist = extract_filenames(manifest['files'], '', [])
 
     # use Heredocs for a README preamble
-    def doc_preamble(user, repository)
+    def doc_preamble(user, repository, title)
         doc_preamble = <<~DOC
         # #{title}
 
@@ -95,7 +95,7 @@ Handler = Proc.new do |req, res|
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                doc_readme = doc_preamble(user, repository) + "\n" + (URI.open(uri_readme)).read
+                doc_readme = doc_preamble(user, repository, title) + "\n" + (URI.open(uri_readme)).read
                 api.repos.contents.create user.login, repository, filename,
                     content: doc_readme,
                     path: filename,
