@@ -120,6 +120,7 @@ Handler = Proc.new do |req, res|
                 page = Nokogiri::HTML(URI.open(uri_page))
                 page.title = title + ' | ' + File.basename(filename, '.html').capitalize
                 page.at('meta[name="description"]')['content'] = description
+                page.at_css('body').attributes['mv-storage'].value = uri_repo
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
                     path: filename,
