@@ -106,8 +106,8 @@ Handler = Proc.new do |req, res|
                 page = Nokogiri::HTML(URI.open(uri_page))
                 page.title = title
                 page.at('meta[name="description"]')['content'] = description
-                page.at_css("h1#headline") = title
-                page.at_css("p#description") = description
+                # page.at_css("h1#headline") = title
+                # page.at_css("p#description") = description
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
                     path: filename,
@@ -117,7 +117,7 @@ Handler = Proc.new do |req, res|
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
                 page = Nokogiri::HTML(URI.open(uri_page))
                 page.title = title + ' | ' + File.basename(filename, '.html').capitalize
-                page.at('meta[name="description"]')['content'] = description
+                # page.at('meta[name="description"]')['content'] = description
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
                     path: filename,
