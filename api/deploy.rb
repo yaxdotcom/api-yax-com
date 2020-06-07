@@ -89,6 +89,7 @@ Handler = Proc.new do |req, res|
             has_issues: true
         # retrieve and save files
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
+        uri_repo = "https://github.com/#{user.login}/#{repository}/data"
         filelist.each do |filename|
             commit_msg = "Yax: #{File.basename(filename)} from template"
             case 
@@ -106,6 +107,7 @@ Handler = Proc.new do |req, res|
                 page = Nokogiri::HTML(URI.open(uri_page))
                 page.title = title
                 page.at('meta[name="description"]')['content'] = description
+                page.at_css('body').attributes['mv-storage'].value = uri_repo
                 page.at_css('h1#headline').content = title
                 page.at_css('p#description').content = description
                 api.repos.contents.create user.login, repository, filename,
