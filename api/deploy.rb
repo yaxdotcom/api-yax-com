@@ -28,6 +28,7 @@ Handler = Proc.new do |req, res|
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
     manifest = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
 
+    # method to extract filenames from a manifest file
     def extract_filenames(source, filepath, filelist)
         case source.class.to_s
         when 'String'
@@ -46,82 +47,89 @@ Handler = Proc.new do |req, res|
         filelist
     end
     
+    # get a list of filenames from manifest file
     filelist = extract_filenames(manifest['files'], '', [])
-    message = 'FILES' + "\n" + '=====' + "\n"
-    filelist.each do |item|
-        message << item + "\n"
+
+    # use Heredocs for a README preamble
+    doc_preamble = <<~DOC
+    # #{title}
+
+    This is the GitHub repository for your #{repository} project, generated from a 
+    [yax.com](https://yax.com) website template. We save your files to GitHub because 
+    storage is permanent (and free) and you get version control to track changes to 
+    your files. Plus, using GitHub, you can easily deploy your website for free hosting.
+    Click a button below to deploy your website.
+
+    [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
+
+    [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
+
+    After you've deployed your website, visit your site to edit the pages. The template 
+    includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
+    on the website.
+
+    You can read below about the #{template} website template you've chosen.
+    DOC
+
+    begin
+        # get and set access_token using user authorization_code and app credentials
+        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
+        access_token = api.get_token(authorization_code)
+        api.oauth_token = access_token.token
+        # get username
+        user = api.users.get
+        log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
+        log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
+        # create a repo
+        api.repos.create name: repository,
+            description: 'Built by yax.com: ' + description
+            private: false,
+            has_issues: true
+        # retrieve and save files
+        uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
+        filelist.each do |filename|
+            commit_msg = "Yax: #{filename} from template"
+            case 
+            when filename == 'README.md'
+                # download, add a preamble, and save a README file
+                uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
+                doc_readme = doc_preamble + "\n" + (URI.open(uri_readme)).read
+                api.repos.contents.create user.login, repository, filename,
+                    content: doc_readme,
+                    path: filename,
+                    message: commit_msg
+            when filename.end_with?('.html')
+                # download, replace some tags, and save an HTML file
+                uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
+                page = Nokogiri::HTML(URI.open(uri_page))
+                page.title = title
+                api.repos.contents.create user.login, repository, filename,
+                    content: page.to_html,
+                    path: filename,
+                    message: commit_msg
+            else
+                # download and save a file without modification
+                uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
+                file = (URI.open(uri_file)).read
+                api.repos.contents.create user.login, repository, filename,
+                    content: file,
+                    path: filename,
+                    message: commit_msg
+            end
+        end
+
+        # output
+        res.status = 301
+        res['Location'] = "https://github.com/#{user.login}/#{repository}"
+        res.body = ''
+    rescue Github::Error::GithubError => e
+        log.error('deploy.rb') { "\n" + e.message + "\n" }
+        res.status = 500
+        if(e.message.include?('name already exists'))
+            res.body = "Error: A repository with the name #{repository} already exists. Try another name."
+        else
+            res.body = e.message
+        end
     end
-    # output
-    res.status = 200
-    res.body = message
-
-    # # download README file
-    # uri_readme = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/README.md")
-    # doc_readme = (URI.open(uri_readme)).read
-
-    # # download, parse and replace HTML index file
-    # uri_index = URI("https://raw.githubusercontent.com/yaxdotcom/#{template}/master/index.html")
-    # page = Nokogiri::HTML(URI.open(uri_index))
-    # page.title = title
-
-    # begin
-    #     # get and set access_token using user authorization_code and app credentials
-    #     api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
-    #     access_token = api.get_token(authorization_code)
-    #     api.oauth_token = access_token.token
-    #     # get username
-    #     user = api.users.get
-    #     log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
-    #     log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
-
-    #     # use Heredocs for a README preamble
-    #     doc_preamble = <<~DOC
-    #     # #{title}
-
-    #     This is the GitHub repository for your #{repository} project, generated from a 
-    #     [yax.com](https://yax.com) website template. We save your files to GitHub because 
-    #     storage is permanent (and free) and you get version control to track changes to 
-    #     your files. Plus, using GitHub, you can easily deploy your website for free hosting.
-    #     Click a button below to deploy your website.
-
-    #     [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
-
-    #     [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
-
-    #     After you've deployed your website, visit your site to edit the pages. The template 
-    #     includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
-    #     on the website.
-
-    #     You can read below about the #{template} website template you've chosen.
-    #     DOC
-
-    #     # create a repo
-    #     api.repos.create name: repository,
-    #         description: 'Built by yax.com: ' + description
-    #         private: false,
-    #         has_issues: true
-    #     # save a README file
-    #     api.repos.contents.create user.login, repository, 'README.md',
-    #         content: doc_preamble + "\n" + doc_readme,
-    #         path: 'README.md',
-    #         message: 'Yax: README from template'
-    #     # save a template file
-    #     api.repos.contents.create user.login, repository, 'index.html',
-    #         content: page.to_html,
-    #         path: 'index.html',
-    #         message: 'Yax: index.html file from template'
-    #     # output
-    #     res.status = 301
-    #     res['Location'] = "https://github.com/#{user.login}?tab=repositories"
-    #     res.body = ''
-    # rescue Github::Error::GithubError => e
-    #     log.error('deploy.rb') { "\n" + e.message + "\n" }
-    #     res.status = 500
-    #     if(e.message.include?('name already exists'))
-    #         res.body = "Error: A repository with the name #{repository} already exists. Try another name."
-    #     else
-    #         res.body = e.message
-    #     end
-    # end
 
 end
