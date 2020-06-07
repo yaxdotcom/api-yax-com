@@ -55,8 +55,8 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{params['title']}
 
-        This is the GitHub repository for your #{params['repository']} project, generated from a 
-        [yax.com](https://yax.com) website template. We save your files to GitHub because 
+        This is the GitHub repository for your project named "#{params['repository']}," generated from a 
+        website template found at [yax.com](https://yax.com). We save your files to GitHub because 
         storage is permanent (and free) and you get version control to track changes to 
         your files. Plus, using GitHub, you can easily deploy your website for free hosting.
         Click a button below to deploy your website.
@@ -69,7 +69,7 @@ Handler = Proc.new do |req, res|
         includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
         on the website.
 
-        You can read below about the #{params['templateId']} website template you've chosen.
+        You can read below about the website template you're using.
         DOC
     end
 
@@ -84,13 +84,13 @@ Handler = Proc.new do |req, res|
         log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
         # create a repo
         api.repos.create name: repository,
-            description: 'Built by yax.com: ' + description,
+            description: 'Description: ' + description,
             private: false,
             has_issues: true
         # retrieve and save files
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
         filelist.each do |filename|
-            commit_msg = "Yax: #{filename} from template"
+            commit_msg = "Yax: #{File.basename(filename)} from template"
             case 
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
@@ -100,11 +100,24 @@ Handler = Proc.new do |req, res|
                     content: doc_readme,
                     path: filename,
                     message: commit_msg
+            when filename == 'index.html'
+                # download, replace some tags, and save an index.html file
+                uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
+                page = Nokogiri::HTML(URI.open(uri_page))
+                page.title = title
+                page.at('meta[name="description"]')['content'] = description
+                page.at_css("h1#headline") = title
+                page.at_css("p#description") = description
+                api.repos.contents.create user.login, repository, filename,
+                    content: page.to_html,
+                    path: filename,
+                    message: commit_msg
             when filename.end_with?('.html')
                 # download, replace some tags, and save an HTML file
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
                 page = Nokogiri::HTML(URI.open(uri_page))
-                page.title = title
+                page.title = title + ' | ' + File.basename(filename, '.html').capitalize
+                page.at('meta[name="description"]')['content'] = description
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
                     path: filename,
