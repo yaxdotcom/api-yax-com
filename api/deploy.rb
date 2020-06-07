@@ -61,7 +61,7 @@ Handler = Proc.new do |req, res|
         your files. Plus, using GitHub, you can easily deploy your website for free hosting.
         Click a button below to deploy your website.
 
-        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
+        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
         [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
 
