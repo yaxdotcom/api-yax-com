@@ -7,7 +7,7 @@ require 'open-uri'
 require 'yaml'
 
 Handler = Proc.new do |req, res|
- 
+
     log = Logger.new(STDOUT)
 
     # parameters
@@ -19,10 +19,10 @@ Handler = Proc.new do |req, res|
     description = params['description']
 
     # diagnostics
-    log.info('deploy.rb') { "\n template: " + template + "\n" }
-    log.info('deploy.rb') { "\n repository: " + repository + "\n" }
-    log.info('deploy.rb') { "\n title: " + title + "\n" }
-    log.info('deploy.rb') { "\n description: " + description + "\n" }
+    log.info('deploy.rb') { "\n template: " + template + "\n" } if !template.nil?
+    log.info('deploy.rb') { "\n repository: " + repository + "\n" } if !repository.nil?
+    log.info('deploy.rb') { "\n title: " + title + "\n" } if !title.nil?
+    log.info('deploy.rb') { "\n description: " + description + "\n" } if !description.nil?
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
@@ -46,7 +46,7 @@ Handler = Proc.new do |req, res|
         end
         filelist
     end
-    
+
     # get a list of filenames from manifest file
     filelist = extract_filenames(manifest['files'], '', [])
 
@@ -55,9 +55,9 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{params['title']}
 
-        This is the GitHub repository for your project named "#{params['repository']}," generated from a 
-        website template found at [yax.com](https://yax.com). We save your files to GitHub because 
-        storage is permanent (and free) and you get version control to track changes to 
+        This is the GitHub repository for your project named "#{params['repository']}," generated from a
+        website template found at [yax.com](https://yax.com). We save your files to GitHub because
+        storage is permanent (and free) and you get version control to track changes to
         your files. Plus, using GitHub, you can easily deploy your website for free hosting.
         Click a button below to deploy your website.
 
@@ -65,8 +65,8 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
 
-        After you've deployed your website, visit your site to edit the pages. The template 
-        includes the [Mavo](https://mavo.io/) website editor so you can edit content right 
+        After you've deployed your website, visit your site to edit the pages. The template
+        includes the [Mavo](https://mavo.io/) website editor so you can edit content right
         on the website.
 
         You can read below about the website template you're using.
@@ -80,8 +80,7 @@ Handler = Proc.new do |req, res|
         api.oauth_token = access_token.token
         # get username
         user = api.users.get
-        log.info('deploy.rb') { "\n user login: " + user.login + "\n" }
-        log.info('deploy.rb') { "\n user email: " + user.email + "\n" }
+        log.info('deploy.rb') { "\n user login: " + user.login + "\n" } if !user.login.nil?
         # create a repo
         api.repos.create name: repository,
             description: 'Description: ' + description,
@@ -92,7 +91,7 @@ Handler = Proc.new do |req, res|
         uri_repo = "https://github.com/#{user.login}/#{repository}/data"
         filelist.each do |filename|
             commit_msg = "Yax: #{File.basename(filename)} from template"
-            case 
+            case
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
