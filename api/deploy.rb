@@ -75,7 +75,7 @@ Handler = Proc.new do |req, res|
 
     begin
         # get and set access_token using user authorization_code and app credentials
-        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
+        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'], scopes: ['public_repo'])
         access_token = api.get_token(authorization_code)
         api.oauth_token = access_token.token
         # get username
