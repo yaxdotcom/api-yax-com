@@ -75,9 +75,10 @@ Handler = Proc.new do |req, res|
 
     begin
         # get and set access_token using user authorization_code and app credentials
-        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'])
+        api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'], scopes: ['public_repo'])
         access_token = api.get_token(authorization_code)
         api.oauth_token = access_token.token
+        log.info('deploy.rb') { "\n scopes: " + api.scopes.list  + "\n" } if !api.scopes.nil?
         # get username
         user = api.users.get
         log.info('deploy.rb') { "\n user login: " + user.login + "\n" } if !user.login.nil?
