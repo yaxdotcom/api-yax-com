@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
-gem "cowsay", "~> 0.3.0"
+gem 'fauna'
 gem 'github_api'
 gem 'nokogiri'
+

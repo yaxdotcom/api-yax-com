@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'fauna'
 require 'github_api'
 require 'json'
 require 'logger'
@@ -9,6 +10,11 @@ require 'yaml'
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
+    observer = Fauna::ClientLogger.logger { |log| logger.debug(log) }
+
+    $fauna = Fauna::Client.new(
+      secret: ENV['FAUNA_SERVER_KEY'],
+      observer: observer)
 
     # parameters
     authorization_code = req.query['code']
@@ -134,6 +140,18 @@ Handler = Proc.new do |req, res|
                     path: filename,
                     message: commit_msg
             end
+        end
+
+        # log data to FaunaDB
+        $fauna.query do
+          create ref('classes/deploys'), data: {
+              user_login: user.login,
+              url: "https://github.com/#{user.login}/#{repository}",
+              template: template,
+              repository: repository,
+              title: title,
+              description: description
+            }
         end
 
         # output
