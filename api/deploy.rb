@@ -55,21 +55,24 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{params['title']}
 
-        This is the GitHub repository for your project named "#{params['repository']}," generated from a
-        website template found at [yax.com](https://yax.com). We save your files to GitHub because
-        storage is permanent (and free) and you get version control to track changes to
-        your files. Plus, using GitHub, you can easily deploy your website for free hosting.
-        Click a button below to deploy your website.
+        This is the GitHub repository for the project "#{params['repository']}." It was generated from a
+        website template at [yax.com](https://yax.com).
 
-        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
+        With GitHub, storage is permanent (and free). From GitHub, you can deploy your website for free hosting.
+        Just click a button to deploy your website to [Render.com](https://render.com/),
+        [Vercel](https://vercel.com/), or [Netlify](https://www.netlify.com/).
+
+        [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
         [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
 
-        After you've deployed your website, visit your site to edit the pages. The template
-        includes the [Mavo](https://mavo.io/) website editor so you can edit content right
-        on the website.
+        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
-        You can read below about the website template you're using.
+        After deploying your website, visit your site to edit the pages.
+
+        Visit [tutorials.yax.com](https://tutorials.yax.com/) for more information.
+
+        Read below about the website template.
         DOC
     end
 
