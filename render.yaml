@@ -1,0 +1,8 @@
+services:
+- type: web
+  name: api-yax-com
+  env: ruby
+  buildCommand: bundle install
+  startCommand: bundle exec ruby ./api/try.rb
+  domains:
+    - api.yax.com
