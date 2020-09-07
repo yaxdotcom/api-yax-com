@@ -10,12 +10,9 @@ require 'yaml'
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
-    observer = Fauna::ClientLogger.logger { |log| logger.debug(log) }
 
     # create a FaunaDB client
-    $fauna = Fauna::Client.new(
-        secret: ENV['FAUNA_SERVER_KEY'],
-        observer: observer)
+    $fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
 
     # parameters
     authorization_code = req.query['code']
