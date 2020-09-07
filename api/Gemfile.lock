@@ -1,13 +1,3 @@
-GIT
-  remote: https://github.com/igas/faunadb-ruby.git
-  revision: f09176e27edb4efbb2996a2c12197fb06b17d3ac
-  branch: patch-1
-  specs:
-    fauna (3.0.1.pre.1)
-      faraday (~> 1.0)
-      json (~> 2.3)
-      net-http-persistent (~> 2.9)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -40,18 +30,22 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
-    public_suffix (4.0.5)
+    public_suffix (4.0.6)
     rack (2.2.3)
     thread_safe (0.3.6)
+    yax-fauna (3.0.1)
+      faraday (~> 1.0)
+      json (~> 2.3)
+      net-http-persistent (~> 2.9)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   cowsay
-  fauna!
   github_api
   nokogiri
+  yax-fauna
 
 BUNDLED WITH
    2.1.2
