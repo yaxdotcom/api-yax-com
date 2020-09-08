@@ -5,14 +5,20 @@ require 'json'
 require 'logger'
 require 'nokogiri'
 require 'open-uri'
+require 'sib-api-v3-sdk'
 require 'yaml'
 
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
 
-    # create a FaunaDB client
+    # create a FaunaDB client for database transactions
     $fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
+
+    # create a Sendinblue client for transactional email
+    SibApiV3Sdk.configure do |config|
+        config.api_key['api-key'] = ENV['SENDINBLUE_API_KEY']
+    end
 
     # parameters
     authorization_code = req.query['code']
@@ -152,6 +158,28 @@ Handler = Proc.new do |req, res|
                 title: title,
                 description: description
                 }
+        end
+
+        # send transactional email
+        email_api = SibApiV3Sdk::SMTPApi.new
+        send_smtp_email = SibApiV3Sdk::SendSmtpEmail.new
+        send_smtp_email = {
+          'sender':{
+            'name':'Yax',
+            "email":"support@yax.com"
+         },
+          'to'=>[{
+            'email'=>'daniel@danielkehoe.com',
+            'name'=>'Daniel Kehoe'
+          }],
+          'subject':"Try Yax: #{user.login}",
+          'htmlContent':"<html><head></head><body><ul><li>user: #{user.login}</li><li>template: #{template}</li><li>repository: #{repository}</li><li>title: #{title}</li><li>description: #{description}</li></ul></body></html>"
+        };
+        begin
+          result = email_api.send_transac_email(send_smtp_email)
+          p result
+        rescue SibApiV3Sdk::ApiError => e
+          puts "Exception when calling SMTPApi->send_transac_email: #{e}"
         end
 
         # output
