@@ -13,10 +13,10 @@ Handler = Proc.new do |req, res|
 
   varies = 'test from Vercel'
   payload = '{'
-  payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
-  payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
-  payload << '"subject":"Try Yax: ' + varies + '",'
-  payload << '"htmlContent":"<html><head></head><body><h1>Hello this is a test email from sib</h1></body></html>"'
+  payload << '\"sender\":{\"name\":\"Yax\",\"email\":\"support@yax.com\"},'
+  payload << '\"to\":[{\"email\":\"daniel@danielkehoe.com\",\"name\":\"Daniel Kehoe\"}],'
+  payload << '\"subject\":\"Try Yax: ' + varies + '\",'
+  payload << '\"htmlContent\":\"<html><head></head><body><h1>Hello this is a test email from sib</h1></body></html>\"'
   payload << '}'
 
   response = HTTP.headers(
