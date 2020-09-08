@@ -163,6 +163,7 @@ Handler = Proc.new do |req, res|
         payload << '</li><li>repository: ' + repository
         payload << '</li><li>title: ' + title
         payload << '</li><li>description: ' + description
+        payload << '</li><li>url: ' + "https://github.com/#{user.login}/#{repository}"
         payload << '</li></ul></body></html>"'
         payload << '}'
         response = HTTP.headers(
