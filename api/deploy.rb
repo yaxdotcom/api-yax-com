@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'fauna'
 require 'github_api'
+require 'http'
 require 'json'
 require 'logger'
 require 'nokogiri'
@@ -10,9 +11,6 @@ require 'yaml'
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
-
-    # create a FaunaDB client
-    $fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
 
     # parameters
     authorization_code = req.query['code']
@@ -142,8 +140,9 @@ Handler = Proc.new do |req, res|
             end
         end
 
-        # log data to FaunaDB
-        $fauna.query do
+        # send deploy data to FaunaDB
+        fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
+        fauna.query do
             create ref('classes/deploys'), data: {
                 user_login: user.login,
                 url: "https://github.com/#{user.login}/#{repository}",
@@ -153,6 +152,29 @@ Handler = Proc.new do |req, res|
                 description: description
                 }
         end
+
+        # send email alert via Sendinblue
+        payload = '{'
+        payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
+        payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
+        payload << '"subject":"Try Yax: ' + user.login + '",'
+        payload << '"htmlContent":"<html><head></head><body><ul><li>user: '
+        payload << user.login
+        payload << '</li><li>template: '
+        payload << template
+        payload << '</li><li>repository: '
+        payload << repository
+        payload << '</li><li>title: '
+        payload << title
+        payload << '</li><li>description: '
+        payload << description
+        payload << '</li></ul></body></html>'
+        payload << '}'
+        response = HTTP.headers(
+          'accept': 'application/json',
+          'content-type': 'application/json',
+          'api-key': ENV['SENDINBLUE_API_KEY']
+        ).post("https://api.sendinblue.com/v3/smtp/email", :json => JSON.parse(payload) )
 
         # output
         res.status = 301

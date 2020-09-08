@@ -11,27 +11,19 @@ puts("Nokogiri gem version: " + Nokogiri::VERSION)
 
 Handler = Proc.new do |req, res|
 
-  payload = JSON.parse('{
-    "sender":{
-        "name":"Yax",
-        "email":"support@yax.com"
-    },
-    "to":[
-        {
-          "email":"daniel@danielkehoe.com",
-          "name":"Daniel Kehoe"
-        }
-    ],
-    "subject":"test mail from Vercel",
-    "htmlContent":"<html><head></head><body><h1>Hello this is a test email from sib</h1></body></html>"
-  }')
+  varies = 'test from Vercel'
+  payload = '{'
+  payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
+  payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
+  payload << '"subject":"Try Yax: ' + varies + '",'
+  payload << '"htmlContent":"<html><head></head><body><h1>Hello this is a test email from sib</h1></body></html>"'
+  payload << '}'
 
   response = HTTP.headers(
     'accept': 'application/json',
     'content-type': 'application/json',
-    'api-key': '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'
-  ).post("https://api.sendinblue.com/v3/smtp/email", :json => payload )
-
+    'api-key': ENV['SENDINBLUE_API_KEY']
+  ).post("https://api.sendinblue.com/v3/smtp/email", :json => JSON.parse(payload) )
 
   name = req.query['name'] || 'World'
   res.status = 200
