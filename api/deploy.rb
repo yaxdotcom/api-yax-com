@@ -155,15 +155,15 @@ Handler = Proc.new do |req, res|
 
         # send email alert via Sendinblue
         payload = '{'
-        payload << '\"sender\":{\"name\":\"Yax\",\"email\":\"support@yax.com\"},'
-        payload << '\"to\":[{\"email\":\"daniel@danielkehoe.com\",\"name\":\"Daniel Kehoe\"}],'
-        payload << '\"subject\":\"Try Yax: ' + user.login + '\",'
-        payload << '\"htmlContent\":\"<html><head></head><body><ul><li>user: ' + user.login
+        payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
+        payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
+        payload << '"subject":"Try Yax: ' + user.login + '",'
+        payload << '"htmlContent":"<html><head></head><body><ul><li>user: ' + user.login
         payload << '</li><li>template: ' + template
         payload << '</li><li>repository: ' + repository
         payload << '</li><li>title: ' + title
         payload << '</li><li>description: ' + description
-        payload << '</li></ul></body></html>\"'
+        payload << '</li></ul></body></html>"'
         payload << '}'
         response = HTTP.headers(
           'accept': 'application/json',
