@@ -2,5 +2,4 @@ source "https://rubygems.org"
 gem 'cowsay'
 gem 'github_api'
 gem 'nokogiri'
-gem 'sib-api-v3-sdk'
 gem 'yax-fauna'
