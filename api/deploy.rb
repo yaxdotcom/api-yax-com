@@ -135,7 +135,7 @@ Handler = Proc.new do |req, res|
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
                 begin
-                    doc_readme = doc_preamble(user, params) + "\n" + errors "\n" + (URI.open(uri_readme)).read
+                    doc_readme = doc_preamble(user, params) + "\n" + errors + "\n" + (URI.open(uri_readme)).read
                     api.repos.contents.create user.login, repository, filename,
                         content: doc_readme,
                         path: filename,
