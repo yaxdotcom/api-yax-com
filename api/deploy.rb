@@ -141,19 +141,20 @@ Handler = Proc.new do |req, res|
                     puts msg
                 end
             else
-                return if(filename == 'README.md')
-                # download and save a file without modification
-                uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
-                begin
-                    file = (URI.open(uri_file)).read
-                    api.repos.contents.create user.login, repository, filename,
-                        content: file,
-                        path: filename,
-                        message: commit_msg
-                rescue StandardError => e
-                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
-                    errors << msg
-                    puts msg
+                unless(filename == 'README.md')
+                    # download and save a file without modification
+                    uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
+                    begin
+                        file = (URI.open(uri_file)).read
+                        api.repos.contents.create user.login, repository, filename,
+                            content: file,
+                            path: filename,
+                            message: commit_msg
+                    rescue StandardError => e
+                        msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                        errors << msg
+                        puts msg
+                    end
                 end
             end
         end
