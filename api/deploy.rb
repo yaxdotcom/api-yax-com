@@ -81,7 +81,7 @@ Handler = Proc.new do |req, res|
 
     def any_errors(errors)
         return '' if(errors.nil? || errors.empty?)
-        msg = "###Errors\n#{errors}\n"
+        msg = "### Errors\n\n#{errors}\n"
     end
 
     begin
@@ -119,8 +119,8 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
-                    errors << msg
+                    msg = "Was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                    errors << msg + "\n"
                     puts msg
                 end
             when filename.end_with?('.html')
@@ -136,8 +136,8 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
-                    errors << msg
+                    msg = "Was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                    errors << msg + "\n"
                     puts msg
                 end
             else
@@ -151,8 +151,8 @@ Handler = Proc.new do |req, res|
                             path: filename,
                             message: commit_msg
                     rescue StandardError => e
-                        msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
-                        errors << msg
+                        msg = "Was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                        errors << msg + "\n"
                         puts msg
                     end
                 end
