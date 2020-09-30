@@ -80,7 +80,7 @@ Handler = Proc.new do |req, res|
     end
 
     def any_errors(errors)
-        return if errors.nil? || errors.empty?
+        return '' if(errors.nil? || errors.empty?)
         msg = "###Errors\n#{errors}\n"
     end
 
@@ -141,7 +141,7 @@ Handler = Proc.new do |req, res|
                     puts msg
                 end
             else
-                return if filename == 'README.md'
+                return if(filename == 'README.md')
                 # download and save a file without modification
                 uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
                 begin
