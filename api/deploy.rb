@@ -57,7 +57,7 @@ Handler = Proc.new do |req, res|
         doc_preamble = <<~DOC
         # #{params['title']}
 
-        This is the GitHub repository for the project "#{params['repository']}." It was generated from a
+        This is the GitHub repository for the project "#{params['repository']}", generated from a
         website template at [yax.com](https://yax.com).
 
         With GitHub, storage is permanent (and free). From here, deploy your website for free hosting.
@@ -70,12 +70,12 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
-        After deploying your website, visit your site to edit the pages with the on-page editor.
+        After deploying your website, visit the site to edit the pages with the on-page editor.
 
         Visit [tutorials.yax.com](https://tutorials.yax.com/) for help with custom domains, HTML editing, and more.
-        View other website templates at [sites.yax.com](https://sites.yax.com/).
+        Want more website choices? See the gallery at [sites.yax.com](https://sites.yax.com/).
 
-        Read below about the website template.
+        Here are details about this website template.
         DOC
     end
 
@@ -97,7 +97,7 @@ Handler = Proc.new do |req, res|
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
         uri_repo = "https://github.com/#{user.login}/#{repository}/data"
         filelist.each do |filename|
-            commit_msg = "Yax: #{File.basename(filename)} from template"
+            commit_msg = "(yax) #{File.basename(filename)} from template"
             case
             when filename == 'index.html'
                 # download, replace some tags, and save an index.html file
@@ -114,7 +114,7 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    errors << "yax.yaml file error? #{e.inspect}\n"
+                    errors << "yax.yaml file error? #{e.inspect} #{filename}\n"
                 end
             when filename.end_with?('.html')
                 # download, replace some tags, and save an HTML file
@@ -129,7 +129,7 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    errors << "yax.yaml file error? #{e.inspect}\n"
+                    errors << "yax.yaml file error? #{e.inspect} #{filename}\n"
                 end
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
@@ -141,7 +141,7 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    puts "README file missing? #{e.inspect}\n"
+                    puts "README file missing? #{e.inspect} #{filename}\n"
                 end
             else
                 # download and save a file without modification
@@ -153,7 +153,7 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    puts "yax.yaml file error? #{e.inspect}\n"
+                    puts "yax.yaml file error? #{e.inspect} #{filename}\n"
                 end
             end
         end
