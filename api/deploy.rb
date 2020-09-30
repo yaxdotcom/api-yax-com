@@ -60,7 +60,7 @@ Handler = Proc.new do |req, res|
         This is the GitHub repository for the project "#{params['repository']}." It was generated from a
         website template at [yax.com](https://yax.com).
 
-        With GitHub, storage is permanent (and free). From GitHub, you can deploy your website for free hosting.
+        With GitHub, storage is permanent (and free). From here, deploy your website for free hosting.
         Just click a button to deploy your website to [Render.com](https://render.com/),
         [Vercel](https://vercel.com/), or [Netlify](https://www.netlify.com/).
 
@@ -70,9 +70,10 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
-        After deploying your website, visit your site to edit the pages.
+        After deploying your website, visit your site to edit the pages with the on-page editor.
 
-        Visit [tutorials.yax.com](https://tutorials.yax.com/) for more information.
+        Visit [tutorials.yax.com](https://tutorials.yax.com/) for help with custom domains, HTML editing, and more.
+        View other website templates at [sites.yax.com](https://sites.yax.com/).
 
         Read below about the website template.
         DOC
@@ -92,22 +93,12 @@ Handler = Proc.new do |req, res|
             private: false,
             has_issues: true
         # retrieve and save files
+        errors = ''
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
         uri_repo = "https://github.com/#{user.login}/#{repository}/data"
         filelist.each do |filename|
             commit_msg = "Yax: #{File.basename(filename)} from template"
             case
-            when filename == 'README.md'
-                # download, add a preamble, and save a README file
-                uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                begin
-                    doc_readme = doc_preamble(user, params) + "\n" + (URI.open(uri_readme)).read
-                    api.repos.contents.create user.login, repository, filename,
-                        content: doc_readme,
-                        path: filename,
-                        message: commit_msg
-                rescue Exception
-                end
             when filename == 'index.html'
                 # download, replace some tags, and save an index.html file
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
@@ -122,7 +113,8 @@ Handler = Proc.new do |req, res|
                         content: page.to_html,
                         path: filename,
                         message: commit_msg
-                rescue Exception
+                rescue StandardError => e
+                    errors << "yax.yaml file error? #{e.inspect}\n"
                 end
             when filename.end_with?('.html')
                 # download, replace some tags, and save an HTML file
@@ -136,7 +128,20 @@ Handler = Proc.new do |req, res|
                         content: page.to_html,
                         path: filename,
                         message: commit_msg
-                rescue Exception
+                rescue StandardError => e
+                    errors << "yax.yaml file error? #{e.inspect}\n"
+                end
+            when filename == 'README.md'
+                # download, add a preamble, and save a README file
+                uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
+                begin
+                    doc_readme = doc_preamble(user, params) + "\n" + errors "\n" + (URI.open(uri_readme)).read
+                    api.repos.contents.create user.login, repository, filename,
+                        content: doc_readme,
+                        path: filename,
+                        message: commit_msg
+                rescue StandardError => e
+                    puts "README file missing? #{e.inspect}\n"
                 end
             else
                 # download and save a file without modification
@@ -147,7 +152,8 @@ Handler = Proc.new do |req, res|
                         content: file,
                         path: filename,
                         message: commit_msg
-                rescue Exception
+                rescue StandardError => e
+                    puts "yax.yaml file error? #{e.inspect}\n"
                 end
             end
         end
