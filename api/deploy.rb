@@ -100,43 +100,55 @@ Handler = Proc.new do |req, res|
             when filename == 'README.md'
                 # download, add a preamble, and save a README file
                 uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                doc_readme = doc_preamble(user, params) + "\n" + (URI.open(uri_readme)).read
-                api.repos.contents.create user.login, repository, filename,
-                    content: doc_readme,
-                    path: filename,
-                    message: commit_msg
+                begin
+                    doc_readme = doc_preamble(user, params) + "\n" + (URI.open(uri_readme)).read
+                    api.repos.contents.create user.login, repository, filename,
+                        content: doc_readme,
+                        path: filename,
+                        message: commit_msg
+                rescue Exception
+                end
             when filename == 'index.html'
                 # download, replace some tags, and save an index.html file
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
-                page = Nokogiri::HTML(URI.open(uri_page))
-                page.title = title
-                page.at('meta[name="description"]')['content'] = description
-                page.at_css('body').attributes['mv-storage'].value = uri_repo
-                page.at_css('[id="title"]').content = title unless page.at_css('[id="title"]').nil?
-                page.at_css('[id="description"]').content = description unless page.at_css('[id="description"]').nil?
-                api.repos.contents.create user.login, repository, filename,
-                    content: page.to_html,
-                    path: filename,
-                    message: commit_msg
+                begin
+                    page = Nokogiri::HTML(URI.open(uri_page))
+                    page.title = title
+                    page.at('meta[name="description"]')['content'] = description
+                    page.at_css('body').attributes['mv-storage'].value = uri_repo
+                    page.at_css('[id="title"]').content = title unless page.at_css('[id="title"]').nil?
+                    page.at_css('[id="description"]').content = description unless page.at_css('[id="description"]').nil?
+                    api.repos.contents.create user.login, repository, filename,
+                        content: page.to_html,
+                        path: filename,
+                        message: commit_msg
+                rescue Exception
+                end
             when filename.end_with?('.html')
                 # download, replace some tags, and save an HTML file
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
-                page = Nokogiri::HTML(URI.open(uri_page))
-                page.title = title + ' | ' + File.basename(filename, '.html').capitalize
-                page.at('meta[name="description"]')['content'] = description
-                page.at_css('body').attributes['mv-storage'].value = uri_repo
-                api.repos.contents.create user.login, repository, filename,
-                    content: page.to_html,
-                    path: filename,
-                    message: commit_msg
+                begin
+                    page = Nokogiri::HTML(URI.open(uri_page))
+                    page.title = title + ' | ' + File.basename(filename, '.html').capitalize
+                    page.at('meta[name="description"]')['content'] = description
+                    page.at_css('body').attributes['mv-storage'].value = uri_repo
+                    api.repos.contents.create user.login, repository, filename,
+                        content: page.to_html,
+                        path: filename,
+                        message: commit_msg
+                rescue Exception
+                end
             else
                 # download and save a file without modification
                 uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
-                file = (URI.open(uri_file)).read
-                api.repos.contents.create user.login, repository, filename,
-                    content: file,
-                    path: filename,
-                    message: commit_msg
+                begin
+                    file = (URI.open(uri_file)).read
+                    api.repos.contents.create user.login, repository, filename,
+                        content: file,
+                        path: filename,
+                        message: commit_msg
+                rescue Exception
+                end
             end
         end
 
