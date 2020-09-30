@@ -156,17 +156,18 @@ Handler = Proc.new do |req, res|
                     puts msg
                 end
             end
-            # download, add a preamble, and save a README file
-            uri_readme = URI("#{uri_raw}#{template}/master/README.md")
-            begin
-                doc_readme = doc_preamble(user, params) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
-                api.repos.contents.create user.login, repository, filename,
-                    content: doc_readme,
-                    path: filename,
-                    message: commit_msg
-            rescue StandardError => e
-                puts "README file missing? #{e.inspect} #{filename}\n"
-            end
+        end
+
+        # download, add a preamble, and save a README file
+        uri_readme = URI("#{uri_raw}#{template}/master/README.md")
+        begin
+            doc_readme = doc_preamble(user, params) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
+            api.repos.contents.create user.login, repository, filename,
+                content: doc_readme,
+                path: filename,
+                message: commit_msg
+        rescue StandardError => e
+            puts "README file missing? #{e.inspect} #{filename}\n"
         end
 
         # send deploy data to FaunaDB
