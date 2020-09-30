@@ -79,6 +79,11 @@ Handler = Proc.new do |req, res|
         DOC
     end
 
+    def any_errors(errors)
+        return if errors.nil? || errors.empty?
+        msg = "###Errors\n#{errors}\n"
+    end
+
     begin
         # get and set access_token using user authorization_code and app credentials
         api = Github.new(client_id: ENV['GITHUB_CLIENT_ID'], client_secret: ENV['GITHUB_CLIENT_SECRET'], scopes: ['public_repo'])
@@ -114,7 +119,9 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    errors << "yax.yaml file error? #{e.inspect} #{filename}\n"
+                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                    errors << msg
+                    puts msg
                 end
             when filename.end_with?('.html')
                 # download, replace some tags, and save an HTML file
@@ -129,21 +136,12 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    errors << "yax.yaml file error? #{e.inspect} #{filename}\n"
-                end
-            when filename == 'README.md'
-                # download, add a preamble, and save a README file
-                uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
-                begin
-                    doc_readme = doc_preamble(user, params) + "\n" + errors + "\n" + (URI.open(uri_readme)).read
-                    api.repos.contents.create user.login, repository, filename,
-                        content: doc_readme,
-                        path: filename,
-                        message: commit_msg
-                rescue StandardError => e
-                    puts "README file missing? #{e.inspect} #{filename}\n"
+                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                    errors << msg
+                    puts msg
                 end
             else
+                return if filename == 'README.md'
                 # download and save a file without modification
                 uri_file = URI("#{uri_raw}#{template}/master/#{filename}")
                 begin
@@ -153,8 +151,21 @@ Handler = Proc.new do |req, res|
                         path: filename,
                         message: commit_msg
                 rescue StandardError => e
-                    puts "yax.yaml file error? #{e.inspect} #{filename}\n"
+                    msg = "was there a yax.yaml file error? #{e.inspect} #{filename}\n"
+                    errors << msg
+                    puts msg
                 end
+            end
+            # download, add a preamble, and save a README file
+            uri_readme = URI("#{uri_raw}#{template}/master/README.md")
+            begin
+                doc_readme = doc_preamble(user, params) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
+                api.repos.contents.create user.login, repository, filename,
+                    content: doc_readme,
+                    path: filename,
+                    message: commit_msg
+            rescue StandardError => e
+                puts "README file missing? #{e.inspect} #{filename}\n"
             end
         end
 
