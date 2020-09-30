@@ -112,8 +112,8 @@ Handler = Proc.new do |req, res|
                 page.title = title
                 page.at('meta[name="description"]')['content'] = description
                 page.at_css('body').attributes['mv-storage'].value = uri_repo
-                page.at_css('h1#headline').content = title
-                page.at_css('p#description').content = description
+                page.at_css('[id="title"]').content = title unless page.at_css('[id="title"]').nil?
+                page.at_css('[id="description"]').content = description unless page.at_css('[id="description"]').nil?
                 api.repos.contents.create user.login, repository, filename,
                     content: page.to_html,
                     path: filename,
