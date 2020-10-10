@@ -112,6 +112,7 @@ Handler = Proc.new do |req, res|
                     page.title = title
                     page.at('meta[name="description"]')['content'] = description
                     page.at_css('body').attributes['mv-storage'].value = uri_repo
+                    page.at_css('body').attributes['mv-app'].value = repository
                     page.at_css('[id="title"]').content = title unless page.at_css('[id="title"]').nil?
                     page.at_css('[id="description"]').content = description unless page.at_css('[id="description"]').nil?
                     api.repos.contents.create user.login, repository, filename,
@@ -131,6 +132,7 @@ Handler = Proc.new do |req, res|
                     page.title = title + ' | ' + File.basename(filename, '.html').capitalize
                     page.at('meta[name="description"]')['content'] = description
                     page.at_css('body').attributes['mv-storage'].value = uri_repo
+                    page.at_css('body').attributes['mv-app'].value = repository
                     api.repos.contents.create user.login, repository, filename,
                         content: page.to_html,
                         path: filename,
