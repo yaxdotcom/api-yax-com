@@ -100,7 +100,7 @@ Handler = Proc.new do |req, res|
         # retrieve and save files
         errors = ''
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
-        uri_repo = "https://github.com/#{user.login}/#{repository}"
+        uri_repo = "https://github.com/#{user.login}"
         filelist.each do |filename|
             commit_msg = "(yax) #{File.basename(filename)} from template"
             case
