@@ -17,8 +17,6 @@ Handler = Proc.new do |req, res|
       write_key: ENV['SEGMENT_WRITE_KEY'],
       on_error: proc { |error_code, error_body, exception, response| }
     )
-    # analytics ||= SimpleSegmentSegment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
-    log.info 'analytics: ' + analytics.inspect
     
     # parameters
     authorization_code = req.query['code']
@@ -184,7 +182,6 @@ Handler = Proc.new do |req, res|
         end
 
         # send event to Segment.com analytics
-        log.info 'begin Segment.com analytics'
         analytics.identify(user_id: user.login)
         analytics.track(
             user_id: user.login,
@@ -193,7 +190,6 @@ Handler = Proc.new do |req, res|
               template: template,
               url: "https://github.com/#{user.login}/#{repository}"
         })
-        log.info 'end Segment.com analytics'
         
         # send deploy data to FaunaDB
         fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
