@@ -6,14 +6,18 @@ require 'json'
 require 'logger'
 require 'nokogiri'
 require 'open-uri'
-require 'segment/analytics'
+require 'simple_segment'
 require 'yaml'
 
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
 
-    analytics ||= Segment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
+    analytics ||= SimpleSegment::Client.new(
+      write_key: ENV['SEGMENT_WRITE_KEY'],
+      on_error: proc { |error_code, error_body, exception, response| }
+    )
+    # analytics ||= SimpleSegmentSegment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
     log.info 'analytics: ' + analytics.inspect
     
     # parameters
@@ -95,7 +99,7 @@ Handler = Proc.new do |req, res|
         api.oauth_token = access_token.token
         # get username
         user = api.users.get
-        log.info('deploy.rb') { "\n user login: " + user.login + "\n" } if !user.login.nil?
+        log.info { "\n user login: " + user.login + "\n" } if !user.login.nil?
         # create a repo
         api.repos.create name: repository,
             description: 'Description: ' + description,
@@ -179,6 +183,18 @@ Handler = Proc.new do |req, res|
             puts "error writing README: #{e.inspect}\n"
         end
 
+        # send event to Segment.com analytics
+        log.info 'begin Segment.com analytics'
+        analytics.identify(user_id: user.login)
+        analytics.track(
+            user_id: user.login,
+            event: 'Template Deployed',
+            properties: {
+              template: template,
+              url: "https://github.com/#{user.login}/#{repository}"
+        })
+        log.info 'end Segment.com analytics'
+        
         # send deploy data to FaunaDB
         fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
         fauna.query do
@@ -191,9 +207,8 @@ Handler = Proc.new do |req, res|
                 description: description
                 }
         end
-
+        
         # send email alert via Sendinblue
-        log.info 'begin send email'
         payload = '{'
         payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
         payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
@@ -211,19 +226,6 @@ Handler = Proc.new do |req, res|
           'content-type': 'application/json',
           'api-key': ENV['SENDINBLUE_API_KEY']
         ).post("https://api.sendinblue.com/v3/smtp/email", :json => JSON.parse(payload) )
-        log.info 'end send email'
-
-        # send event to Segment.com analytics
-        log.info 'begin Segment.com analytics'
-        analytics.identify(user_id: user.login)
-        analytics.track(
-        user_id: user.login,
-        event: 'Template Deployed',
-        properties: {
-          template: template,
-          url: "https://github.com/#{user.login}/#{repository}"
-        })
-        log.info 'end Segment.com analytics'
         
         # output
         res.status = 301

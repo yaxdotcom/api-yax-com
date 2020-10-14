@@ -3,7 +3,6 @@ GEM
   specs:
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
-    analytics-ruby (2.0.13)
     cowsay (0.3.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
@@ -50,6 +49,7 @@ GEM
     public_suffix (4.0.6)
     rack (2.2.3)
     rake (13.0.1)
+    simple_segment (1.2.0)
     thread_safe (0.3.6)
     unf (0.1.4)
       unf_ext
@@ -63,11 +63,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  analytics-ruby (~> 2.0.0)
   cowsay
   github_api
   http
   nokogiri
+  simple_segment
   yax-fauna
 
 BUNDLED WITH
