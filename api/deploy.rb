@@ -13,11 +13,9 @@ Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
 
-    Analytics = Segment::Analytics.new({
-        write_key: ENV['SEGMENT_WRITE_KEY'],
-        on_error: Proc.new { |status, msg| print msg }
-    })
-           
+    analytics ||= Segment::Analytics.new({write_key: ENV['SEGMENT_WRITE_KEY']})
+    log.info 'analytics: ' + analytics.inspect
+    
     # parameters
     authorization_code = req.query['code']
     params = JSON.parse(Base64.decode64(req.query['state']))
@@ -27,10 +25,10 @@ Handler = Proc.new do |req, res|
     description = params['description']
 
     # diagnostics
-    log.info('deploy.rb') { "\n template: " + template + "\n" } if !template.nil?
-    log.info('deploy.rb') { "\n repository: " + repository + "\n" } if !repository.nil?
-    log.info('deploy.rb') { "\n title: " + title + "\n" } if !title.nil?
-    log.info('deploy.rb') { "\n description: " + description + "\n" } if !description.nil?
+    log.info { " template: " + template + "\n" } if !template.nil?
+    log.info { " repository: " + repository + "\n" } if !repository.nil?
+    log.info { " title: " + title + "\n" } if !title.nil?
+    log.info { " description: " + description + "\n" } if !description.nil?
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
@@ -195,6 +193,7 @@ Handler = Proc.new do |req, res|
         end
 
         # send email alert via Sendinblue
+        log.info 'begin send email'
         payload = '{'
         payload << '"sender":{"name":"Yax","email":"support@yax.com"},'
         payload << '"to":[{"email":"daniel@danielkehoe.com","name":"Daniel Kehoe"}],'
@@ -212,17 +211,20 @@ Handler = Proc.new do |req, res|
           'content-type': 'application/json',
           'api-key': ENV['SENDINBLUE_API_KEY']
         ).post("https://api.sendinblue.com/v3/smtp/email", :json => JSON.parse(payload) )
+        log.info 'end send email'
 
         # send event to Segment.com analytics
-        Analytics.identify(user_id: user.login)
-        Analytics.track(
+        log.info 'begin Segment.com analytics'
+        analytics.identify(user_id: user.login)
+        analytics.track(
         user_id: user.login,
         event: 'Template Deployed',
         properties: {
           template: template,
           url: "https://github.com/#{user.login}/#{repository}"
         })
-
+        log.info 'end Segment.com analytics'
+        
         # output
         res.status = 301
         res['Location'] = "https://github.com/#{user.login}/#{repository}"
