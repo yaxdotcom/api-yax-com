@@ -6,12 +6,18 @@ require 'json'
 require 'logger'
 require 'nokogiri'
 require 'open-uri'
+require 'segment/analytics'
 require 'yaml'
 
 Handler = Proc.new do |req, res|
 
     log = Logger.new(STDOUT)
 
+    Analytics = Segment::Analytics.new({
+        write_key: ENV['SEGMENT_WRITE_KEY'],
+        on_error: Proc.new { |status, msg| print msg }
+    })
+           
     # parameters
     authorization_code = req.query['code']
     params = JSON.parse(Base64.decode64(req.query['state']))
@@ -206,6 +212,16 @@ Handler = Proc.new do |req, res|
           'content-type': 'application/json',
           'api-key': ENV['SENDINBLUE_API_KEY']
         ).post("https://api.sendinblue.com/v3/smtp/email", :json => JSON.parse(payload) )
+
+        # send event to Segment.com analytics
+        Analytics.identify(user_id: user.login)
+        Analytics.track(
+        user_id: user.login,
+        event: 'Template Deployed',
+        properties: {
+          template: template,
+          url: "https://github.com/#{user.login}/#{repository}"
+        })
 
         # output
         res.status = 301
