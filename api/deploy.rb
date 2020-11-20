@@ -108,6 +108,7 @@ Handler = Proc.new do |req, res|
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
         uri_repo = "https://github.com/#{user.login}/#{repository}/blob/main/data"
         filelist.each do |filename|
+            log.info { " copy: " + filename + "\n" } if !filename.nil?
             commit_msg = "(yax) #{File.basename(filename)} from template"
             case
             when filename == 'index.html'
