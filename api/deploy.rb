@@ -33,17 +33,8 @@ Handler = Proc.new do |req, res|
     log.info { " description: " + description + "\n" } if !description.nil?
 
     # download and parse a configuration file
-    manifest = ''
-    begin
-        uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
-        manifest = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
-    rescue OpenURI::HTTPError => e
-        msg = "OpenURI::HTTPError: " + e + "\n"
-        msg << "Trying main instead of master branch\n"
-        puts msg
-        uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/main/yax.yaml"
-        manifest = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
-    end
+    uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
+    manifest = YAML.parse(URI.parse(uri_yaml).open.read).to_ruby
 
     # method to extract filenames from a manifest file
     def extract_filenames(source, filepath, filelist)
