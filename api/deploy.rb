@@ -61,14 +61,12 @@ Handler = Proc.new do |req, res|
     # use Heredocs for a README preamble
     def doc_preamble(user, params)
         doc_preamble = <<~DOC
-        # # Project: {params['title']}
+        # Project: #{params['title']}
 
-        This is the GitHub repository for the project "#{params['repository']}", generated from a
-        website template at [yax.com](https://yax.com).
+        This is the GitHub repository for the project you named "#{params['repository']}", generated from a
+        website template at [yax.com](https://yax.com). With GitHub, storage is permanent (and free).
 
-        With GitHub, storage is permanent (and free). From here, deploy your website for free hosting.
-        Just click a button to deploy your website to [Netlify](https://www.netlify.com/),
-        [Vercel](https://vercel.com/), or [Render.com](https://render.com/).
+        From here, deploy your website for free hosting. Just click a button to deploy your website to [Netlify](https://www.netlify.com/), [Vercel](https://vercel.com/), or [Render.com](https://render.com/). During the process, you will create a second repo for deployment. Name it "#{params['repository']}-deploy".
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
