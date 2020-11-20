@@ -116,12 +116,12 @@ Handler = Proc.new do |req, res|
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
                 begin
                     page = Nokogiri::HTML(URI.open(uri_page))
-                    page.title = title
-                    page.at('meta[name="description"]')['content'] = description
-                    page.at_css('body').attributes['mv-storage'].value = uri_repo
-                    page.at_css('body').attributes['mv-app'].value = repository
-                    page.at_css('[id="title"]').content = title unless page.at_css('[id="title"]').nil?
-                    page.at_css('[id="description"]').content = description unless page.at_css('[id="description"]').nil?
+                    page.title = title if page.title
+                    page.at('meta[name="description"]')['content'] = description if page.at('meta[name="description"]')['content']
+                    page.at_css('body').attributes['mv-storage'].value = uri_repo if page.at_css('body').attributes['mv-storage']
+                    page.at_css('body').attributes['mv-app'].value = repository if page.at_css('body').attributes['mv-app']
+                    page.at_css('[id="title"]').content = title if page.at_css('[id="title"]')
+                    page.at_css('[id="description"]').content = description if page.at_css('[id="description"]')
                     api.repos.contents.create user.login, repository, filename,
                         content: page.to_html,
                         path: filename,
@@ -136,10 +136,10 @@ Handler = Proc.new do |req, res|
                 uri_page = URI("#{uri_raw}#{template}/master/#{filename}")
                 begin
                     page = Nokogiri::HTML(URI.open(uri_page))
-                    page.title = title + ' | ' + File.basename(filename, '.html').capitalize
-                    page.at('meta[name="description"]')['content'] = description
-                    page.at_css('body').attributes['mv-storage'].value = uri_repo
-                    page.at_css('body').attributes['mv-app'].value = repository
+                    page.title = title + ' | ' + File.basename(filename, '.html').capitalize if page.title
+                    page.at('meta[name="description"]')['content'] = description if page.at('meta[name="description"]')['content']
+                    page.at_css('body').attributes['mv-storage'].value = uri_repo if page.at_css('body').attributes['mv-storage']
+                    page.at_css('body').attributes['mv-app'].value = repository if page.at_css('body').attributes['mv-app']
                     api.repos.contents.create user.login, repository, filename,
                         content: page.to_html,
                         path: filename,
@@ -183,14 +183,18 @@ Handler = Proc.new do |req, res|
         end
 
         # send event to Segment.com analytics
-        analytics.identify(user_id: user.login)
-        analytics.track(
-            user_id: user.login,
-            event: 'Template Deployed',
-            properties: {
-              template: template,
-              url: "https://github.com/#{user.login}/#{repository}"
-        })
+        begin
+            analytics.identify(user_id: user.login)
+            analytics.track(
+                user_id: user.login,
+                event: 'Template Deployed',
+                properties: {
+                  template: template,
+                  url: "https://github.com/#{user.login}/#{repository}"
+            })
+        rescue StandardError => e
+            puts "error sending event to Segment.com: #{e.inspect}\n"
+        end
         
         # send deploy data to FaunaDB
         fauna = Fauna::Client.new( secret: ENV['FAUNA_SERVER_KEY'] )
