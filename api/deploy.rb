@@ -61,27 +61,25 @@ Handler = Proc.new do |req, res|
     # use Heredocs for a README preamble
     def doc_preamble(user, params)
         doc_preamble = <<~DOC
-        # #{params['title']}
+        # # Project: {params['title']}
 
         This is the GitHub repository for the project "#{params['repository']}", generated from a
         website template at [yax.com](https://yax.com).
 
         With GitHub, storage is permanent (and free). From here, deploy your website for free hosting.
-        Just click a button to deploy your website to [Render.com](https://render.com/),
-        [Vercel](https://vercel.com/), or [Netlify](https://www.netlify.com/).
-
-        [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
-
-        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
+        Just click a button to deploy your website to [Netlify](https://www.netlify.com/),
+        [Vercel](https://vercel.com/), or [Render.com](https://render.com/).
 
         [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
 
-        After deploying your website, visit the site to edit the pages with the on-page editor.
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
 
-        Visit [tutorials.yax.com](https://tutorials.yax.com/) for help with custom domains, HTML editing, and more.
-        Want more website choices? See the gallery at [sites.yax.com](https://sites.yax.com/).
+        [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+        
+        For more information:
+        - [tutorials.yax.com](https://tutorials.yax.com/) for helpful tutorials
+        - [sites.yax.com](https://sites.yax.com/) for more website templates
 
-        Here are details about this website template.
         DOC
     end
 
@@ -108,7 +106,6 @@ Handler = Proc.new do |req, res|
         uri_raw = 'https://raw.githubusercontent.com/yaxdotcom/'
         uri_repo = "https://github.com/#{user.login}/#{repository}/blob/main/data"
         filelist.each do |filename|
-            log.info { " copy: " + filename + "\n" } if !filename.nil?
             commit_msg = "(yax) #{File.basename(filename)} from template"
             case
             when filename == 'index.html'
