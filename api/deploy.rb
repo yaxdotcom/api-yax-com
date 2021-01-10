@@ -74,7 +74,7 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
         
-        Yax is new. Please send feedback to [support@yax.com](mailto:support@yax.com?subject=[GitHub]%20#{repository})
+        Yax is new. Please send feedback to [support@yax.com](mailto:support@yax.com?subject=[GitHub]%20#{repository}).
         
         For more information:
         - [tutorials.yax.com](https://tutorials.yax.com/) for helpful tutorials
