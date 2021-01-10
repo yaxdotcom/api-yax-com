@@ -60,9 +60,9 @@ Handler = Proc.new do |req, res|
     filelist = extract_filenames(manifest['files'], '', [])
 
     # use Heredocs for a README preamble
-    def doc_preamble(user, repository, template)
+    def doc_preamble(title, user, repository, template)
         doc_preamble = <<~DOC
-        # Project: #{params['title']}
+        # Project: #{title}
 
         This is the GitHub repository for the project you named "#{repository}", generated from the "#{template}" website template at [yax.com](https://yax.com).
 
@@ -170,7 +170,7 @@ Handler = Proc.new do |req, res|
         uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
         commit_msg = "(yax) #{File.basename(filename)} from template"
         begin
-            doc_readme = doc_preamble(user, repository, template) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
+            doc_readme = doc_preamble(title, user, repository, template) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
             api.repos.contents.create user.login, repository, filename,
                 content: doc_readme,
                 path: filename,
