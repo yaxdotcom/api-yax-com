@@ -60,7 +60,7 @@ Handler = Proc.new do |req, res|
     filelist = extract_filenames(manifest['files'], '', [])
 
     # use Heredocs for a README preamble
-    def doc_preamble(user, params)
+    def doc_preamble(user, repository, template)
         doc_preamble = <<~DOC
         # Project: #{params['title']}
 
@@ -68,9 +68,9 @@ Handler = Proc.new do |req, res|
 
         From here, deploy your website for free hosting. Just click a button to deploy your website to [Netlify](https://www.netlify.com/), [Vercel](https://vercel.com/), or [Render.com](https://render.com/). During the process, you will create a second repo for deployment. Name it what you like; I suggest "#{repository}-deploy".
 
-        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{params['repository']})
+        [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/#{user.login}/#{repository})
 
-        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{params['repository']})
+        [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/#{user.login}/#{repository})
 
         [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
         
@@ -170,7 +170,7 @@ Handler = Proc.new do |req, res|
         uri_readme = URI("#{uri_raw}#{template}/master/#{filename}")
         commit_msg = "(yax) #{File.basename(filename)} from template"
         begin
-            doc_readme = doc_preamble(user, params) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
+            doc_readme = doc_preamble(user, repository, template) + "\n" + any_errors(errors) + (URI.open(uri_readme)).read
             api.repos.contents.create user.login, repository, filename,
                 content: doc_readme,
                 path: filename,
