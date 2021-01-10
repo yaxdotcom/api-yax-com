@@ -31,7 +31,7 @@ Handler = Proc.new do |req, res|
     log.info { " repository: " + repository + "\n" } if !repository.nil?
     log.info { " title: " + title + "\n" } if !title.nil?
     log.info { " description: " + description + "\n" } if !description.nil?
-    log.info { " ip address: " + req.header['x-forwarded-for'] + "\n" } if !req.header['x-forwarded-for'].nil?
+    log.info { " ip address: " + req.header['x-forwarded-for'].first() + "\n" } if !req.header['x-forwarded-for'].nil?
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
@@ -189,7 +189,7 @@ Handler = Proc.new do |req, res|
                   template: template,
                   url: "https://github.com/#{user.login}/#{repository}"},
                   context: { 
-                      ip: "#{req.header['x-forwarded-for']}"
+                      ip: "#{req.header['x-forwarded-for'].first() if !req.header['x-forwarded-for'].nil?}"
             })
         rescue StandardError => e
             puts "error sending event to Segment.com: #{e.inspect}\n"
