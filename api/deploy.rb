@@ -31,6 +31,7 @@ Handler = Proc.new do |req, res|
     log.info { " repository: " + repository + "\n" } if !repository.nil?
     log.info { " title: " + title + "\n" } if !title.nil?
     log.info { " description: " + description + "\n" } if !description.nil?
+    log.info { " ip address: " + req.headers['x-forwarded-for'] + "\n" } if !req.headers['x-forwarded-for'].nil?
 
     # download and parse a configuration file
     uri_yaml = "https://raw.githubusercontent.com/yaxdotcom/#{template}/master/yax.yaml"
@@ -178,6 +179,7 @@ Handler = Proc.new do |req, res|
             puts "error writing README: #{e.inspect}\n"
         end
 
+# log.info { " ip address: " + req.headers['x-forwarded-for'] + "\n" } if !req.headers['x-forwarded-for'].nil?
         # send event to Segment.com analytics
         begin
             analytics.identify(user_id: user.login)
@@ -186,7 +188,9 @@ Handler = Proc.new do |req, res|
                 event: 'Template Deployed',
                 properties: {
                   template: template,
-                  url: "https://github.com/#{user.login}/#{repository}"
+                  url: "https://github.com/#{user.login}/#{repository}"},
+                  context: { 
+                      ip: 'req.headers["x-forwarded-for"]'
             })
         rescue StandardError => e
             puts "error sending event to Segment.com: #{e.inspect}\n"
