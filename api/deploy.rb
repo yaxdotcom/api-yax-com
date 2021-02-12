@@ -74,11 +74,12 @@ Handler = Proc.new do |req, res|
 
         [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
         
-        Yax is new. Please send feedback to [support@yax.com](mailto:support@yax.com?subject=[GitHub]%20#{repository}).
+       For help, open a GitHub issue and mention [DanielKehoe](https://github.com/DanielKehoe) or email [support@yax.com](mailto:support@yax.com?subject=[GitHub]%20#{repository}).
         
-        For more information:
-        - [tutorials.yax.com](https://tutorials.yax.com/) for helpful tutorials
-        - [sites.yax.com](https://sites.yax.com/) for more website templates
+       ## Stackless newsletter
+       
+       It is early days for Yax. If you are curious about what we are doing, go to [stackless.community](https://stackless.community/) and sign up for the newsletter, all about Yax and building websites without frameworks or build tools.
+       
 
         DOC
     end
