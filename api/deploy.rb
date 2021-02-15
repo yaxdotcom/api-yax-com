@@ -84,6 +84,21 @@ Handler = Proc.new do |req, res|
         DOC
     end
 
+    # use Heredocs for a GitHub issue
+    def issue_body(title, user, repository, template)
+        issue_body = <<~DOC
+        Can you give some feedback about yax.com? Did deployment and editing work for you?
+        
+        Would love to hear your thoughts, suggestions for improvements, etc.
+        
+        Just give me a reply here.
+        
+        _If you are curious about what we are doing, go to [stackless.community](https://stackless.community/) and sign up for the newsletter, all about Yax and building websites without frameworks or build tools._
+        
+        DOC
+    end
+
+
     def any_errors(errors)
         return '' if(errors.nil? || errors.empty?)
         msg = "### Errors\n\n#{errors}\n"
@@ -178,6 +193,17 @@ Handler = Proc.new do |req, res|
                 message: commit_msg
         rescue StandardError => e
             puts "error writing README: #{e.inspect}\n"
+        end
+
+        # open an issue in the GitHub repo
+        begin
+            api.repos.issues.create user.login, repository, 
+                title: 'Yax is new... can you give me feedback?',
+                body: issue_body,
+                repo: repository,
+                owner: user.login
+        rescue StandardError => e
+            puts "error writing GitHub issue: #{e.inspect}\n"
         end
 
         # send event to Segment.com analytics
