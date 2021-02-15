@@ -209,22 +209,22 @@ Handler = Proc.new do |req, res|
                 }
         end
         
-        # add activity to Orbit CRM
-        payload_orbit_1 = '{'
-        payload_orbit_1 << '"description": "using template **' 
-          + template + '** with title **' 
-          + title + '** and description **' 
-          + description + '**",'
-        payload_orbit_1 << '"link": "https://github.com/' + user.login + '/' + repository + '",'
-        payload_orbit_1 << '"link_text": "' + repository + '",'
-        payload_orbit_1 << '"title": "Try Yax",'
-        payload_orbit_1 << '"activity_type": "Try Yax",'
-        payload_orbit_1 << '"identity": {
-            "source": "github",
-            "username": "' + user.login + '"
-          }'
-        payload_orbit_1 << '}'
-        response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/509/activities", :json => JSON.parse(payload_orbit_1) )
+        # # add activity to Orbit CRM
+        # payload_orbit_1 = '{'
+        # payload_orbit_1 << '"description": "using template **' 
+        #   + template + '** with title **' 
+        #   + title + '** and description **' 
+        #   + description + '**",'
+        # payload_orbit_1 << '"link": "https://github.com/' + user.login + '/' + repository + '",'
+        # payload_orbit_1 << '"link_text": "' + repository + '",'
+        # payload_orbit_1 << '"title": "Try Yax",'
+        # payload_orbit_1 << '"activity_type": "Try Yax",'
+        # payload_orbit_1 << '"identity": {
+        #     "source": "github",
+        #     "username": "' + user.login + '"
+        #   }'
+        # payload_orbit_1 << '}'
+        # response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/509/activities", :json => JSON.parse(payload_orbit_1) )
         
         # add tag to Orbit CRM
         payload_orbit_2 = '{'
