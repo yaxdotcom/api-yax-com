@@ -199,7 +199,7 @@ Handler = Proc.new do |req, res|
 
         # open an issue in the GitHub repo
         begin
-            res = api.issues user.login, repository, 
+            res = api.issues.create user.login, repository, 
                 title: 'Yax is new... give feedback, please',
                 body: issue_body,
                 repo: repository,
