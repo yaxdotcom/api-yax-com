@@ -85,7 +85,7 @@ Handler = Proc.new do |req, res|
     end
 
     # use Heredocs for a GitHub issue
-    def issue_body(title, user, repository, template)
+    def issue_body
         issue_body = <<~DOC
         @DanielKehoe would like feedback about yax.com.
         
@@ -199,7 +199,7 @@ Handler = Proc.new do |req, res|
 
         # open an issue in the GitHub repo
         begin
-            api.issues.create user: 'danielatyax', repo: 'try-yax', title: "Yax is new", body: "issue_body"
+            api.issues.create user: user.login, repo: repository, title: "Yax is new... feedback, please?", body: issue_body
         rescue StandardError => e
             puts "error writing GitHub issue: #{e.inspect}\n"
         end
