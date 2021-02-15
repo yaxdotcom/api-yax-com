@@ -221,7 +221,7 @@ Handler = Proc.new do |req, res|
             "username": "' + user.login + '"
           }'
         payload_orbit_1 << '}'
-        response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/509/activities", :json => JSON.parse(payload_orbit_1) )
+        response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/508/activities", :json => JSON.parse(payload_orbit_1) )
         puts response
         
         # add tag to Orbit CRM
@@ -232,7 +232,7 @@ Handler = Proc.new do |req, res|
           },'
         payload_orbit_2 << '"tags_to_add": "try-yax"'
         payload_orbit_2 << '}'
-        response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/509/members", :json => JSON.parse(payload_orbit_2) )
+        response = HTTP.auth("Bearer #{ENV['ORBIT_API_KEY']}").post("https://app.orbit.love/api/v1/508/members", :json => JSON.parse(payload_orbit_2) )
 
         # send email alert via Sendinblue
         payload = '{'
