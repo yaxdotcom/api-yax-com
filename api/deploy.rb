@@ -87,13 +87,15 @@ Handler = Proc.new do |req, res|
     # use Heredocs for a GitHub issue
     def issue_body(title, user, repository, template)
         issue_body = <<~DOC
-        Can you give some feedback about yax.com? Did deployment and editing work for you?
+        @DanielKehoe would like feedback about yax.com.
         
-        Would love to hear your thoughts, suggestions for improvements, etc.
+        Did deployment and editing work?
         
-        Just give me a reply here.
+        What are your thoughts, suggestions for improvements, etc.?
         
-        _If you are curious about what we are doing, go to [stackless.community](https://stackless.community/) and sign up for the newsletter, all about Yax and building websites without frameworks or build tools._
+        Just give a reply here.
+        
+        _If you are curious about Yax, go to [stackless.community](https://stackless.community/) and sign up for the newsletter, all about Yax and building websites without frameworks or build tools._
         
         DOC
     end
@@ -197,11 +199,12 @@ Handler = Proc.new do |req, res|
 
         # open an issue in the GitHub repo
         begin
-            api.repos.issues.create user.login, repository, 
-                title: 'Yax is new... can you give me feedback?',
+            res = api.repos.issues.create user.login, repository, 
+                title: 'Yax is new... give feedback, please',
                 body: issue_body,
                 repo: repository,
                 owner: user.login
+            puts res
         rescue StandardError => e
             puts "error writing GitHub issue: #{e.inspect}\n"
         end
