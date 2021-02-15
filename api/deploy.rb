@@ -201,7 +201,7 @@ Handler = Proc.new do |req, res|
         begin
             github = Github.new user: user.login, repo: repository
             github.issues.create
-                title: "Yax is new... give feedback please",
+                title: "Yax is new",
                 body: "issue_body"
         rescue StandardError => e
             puts "error writing GitHub issue: #{e.inspect}\n"
