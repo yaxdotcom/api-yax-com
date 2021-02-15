@@ -211,10 +211,7 @@ Handler = Proc.new do |req, res|
         
         # add activity to Orbit CRM
         payload_orbit_1 = '{'
-        payload_orbit_1 << '"description": "using template **' 
-          + template + '** with title **' 
-          + title + '** and description **' 
-          + description + '**",'
+        payload_orbit_1 << '"description": "using template **' + template + '** with title **' + title + '** and description **' + description + '**",'
         payload_orbit_1 << '"link": "https://github.com/' + user.login + '/' + repository + '",'
         payload_orbit_1 << '"link_text": "' + repository + '",'
         payload_orbit_1 << '"title": "Try Yax",'
