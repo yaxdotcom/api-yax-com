@@ -21,10 +21,10 @@ Handler = Proc.new do |req, res|
     # parameters
     authorization_code = req.query['code']
     params = JSON.parse(Base64.decode64(req.query['state']))
-    template = params['templateId']
-    repository = params['repository'].gsub(/(\W)/, "-")
-    title = params['title']
-    description = params['description']
+    template = params['templateId'].scrub
+    repository = params['repository'].gsub(/(\W)/, "-").scrub
+    title = params['title'].scrub
+    description = params['description'].scrub
 
     # diagnostics
     log.info { " template: " + template + "\n" } if !template.nil?
