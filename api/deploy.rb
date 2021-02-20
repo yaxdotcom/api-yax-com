@@ -22,7 +22,7 @@ Handler = Proc.new do |req, res|
     authorization_code = req.query['code']
     params = JSON.parse(Base64.decode64(req.query['state']))
     template = params['templateId'].scrub
-    repository = params['repository'].gsub(/(\W)/, "-").scrub
+    repository = params['repository'].scrub.gsub(/(\W)/, "-")
     title = params['title'].scrub
     description = params['description'].scrub
 
